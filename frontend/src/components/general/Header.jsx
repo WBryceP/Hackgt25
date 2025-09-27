@@ -1,15 +1,18 @@
 import { useState } from "react";
 import SearchBar from "./SearchBar";
-import Menu from "../../assets/menu.svg?react";
+import SideBar from "./Sidebar";
+import Menu from "./Menu";
 
 const Header = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   return (
-    <div className="flex justify-between items-center p-1 py-4 bg-primary shadow-sm">
+    <div className="relative flex justify-between items-center p-3 py-2 bg-primary shadow-sm">
       <div className="">Fact Check</div>
-      <Menu className="w-6 h-6" />
-      <div className=""></div>
-      <SearchBar />
+      <Menu showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <div className="hidden md:flex w-1/2">
+        <SearchBar />
+      </div>
+      <SideBar showSidebar={showSidebar} />
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
+import SectionTabs from "../components/video/SectionTabs";
+
 const Video = () => {
   const { id } = useParams();
 
@@ -12,6 +14,8 @@ const Video = () => {
     <div className="flex flex-col gap-2">
       {/* VIDEO */}
       <div className="w-full bg-primaryInvert aspect-square rounded-sm" />
+      {/* Tabs */}
+      <SectionTabs />
     </div>
   );
 };
