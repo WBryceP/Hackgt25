@@ -3,9 +3,22 @@
 @theme {
   --color-primary: #fffcfb;
   --color-primaryInvert: #000000;
-
   --color-body: #f7fcfc;
+
   --color-redAccent: #ed3500;
   --color-blueAccent: #093fb4;
+
   --color-placeholder: #757575;
+
+  --color-lowBg: #fff5f5;
+  --color-lowText: #822727;
+  --color-lowBorder: #fc8181;
+
+  --color-mediumBg: #fffbea;
+  --color-mediumText: #75533a;
+  --color-mediumBorder: #e4d79c;
+
+  --color-highBg: #f0fff4;
+  --color-highText: #276749;
+  --color-highBorder: #9ae6b4;
 }

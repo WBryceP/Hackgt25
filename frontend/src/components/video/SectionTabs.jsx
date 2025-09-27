@@ -1,4 +1,8 @@
 import { useState } from "react";
+import ClaimAnswer from "./sections/ClaimAnswer";
+import DeepSearch from "./sections/DeepSearch";
+import Sources from "./sections/Sources";
+import FlaggedMoments from "./sections/FlaggedMoments";
 
 const SectionTabs = () => {
   const [selectedTab, setSelectedTab] = useState(1);
@@ -10,6 +14,13 @@ const SectionTabs = () => {
     { name: "Sources", shortened: "Sources" },
   ];
 
+  const content = [
+    <ClaimAnswer />,
+    <DeepSearch />,
+    <Sources />,
+    <FlaggedMoments />,
+  ];
+
   const TabComponents = tabs.map((tab, index) => {
     return (
       <li
@@ -19,9 +30,7 @@ const SectionTabs = () => {
         key={index}
         onClick={() => setSelectedTab(index)}
       >
-        <h2 className="text-center text-xs sm:text-sm md:text-base">
-          {tab.name}
-        </h2>
+        <h2 className="text-center ">{tab.name}</h2>
         {selectedTab === index ? (
           <hr className="w-full absolute bottom-0 border-1" />
         ) : null}
@@ -32,6 +41,7 @@ const SectionTabs = () => {
   return (
     <div className="bg-primary shadow-md rounded-md">
       <ul className="flex flex-row w-full justify-between">{TabComponents}</ul>
+      <div className="p-2">{content[selectedTab]}</div>
     </div>
   );
 };
