@@ -15,7 +15,7 @@ const Video = () => {
     <div>
       <div className="flex flex-col md:flex-row gap-2">
         {/* VIDEO */}
-        <div className=" w-full h-[90vh]  flex flex-col">
+        <div className=" w-full md:h-[90vh]  flex flex-col">
           <div className="w-full bg-primaryInvert aspect-video rounded-sm mb-2" />
           <div className="hidden md:block grow">
             <DeepSearch />

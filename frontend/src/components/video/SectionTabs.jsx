@@ -119,7 +119,7 @@ const SectionTabs = () => {
     return (
       <li
         className={`relative flex flex-1  justify-center items-center hover:bg-primaryInvert/20 py-2 cursor-pointer rounded-sm ${
-          selectedTab === index ? "bg-body" : null
+          selectedTab === index ? "bg-body font-semibold" : null
         }`}
         key={index}
         onClick={() => setSelectedTab(index)}
