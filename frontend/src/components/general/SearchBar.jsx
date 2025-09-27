@@ -30,7 +30,6 @@ const SearchBar = () => {
     setValue("");
 
     nav("/v/" + id);
-    console.log(value);
   };
 
   const handleChange = (e) => {

@@ -5,6 +5,7 @@ import { CedarCopilot } from "cedar-os";
 
 import Home from "./routes/Home";
 import Video from "./routes/Video";
+import Error from "./routes/Error";
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/v/:id" element={<Video />} />
-          </Routes>{" "}
+            <Route path="/error" element={<Error />} />
+          </Routes>
         </Layout>
       </BrowserRouter>
     </CedarCopilot>
