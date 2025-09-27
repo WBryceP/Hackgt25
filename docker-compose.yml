@@ -16,3 +16,18 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+  backend-video-embedding:
+    build:
+      context: ./backend-video-embedding
+      dockerfile: Dockerfile
+    ports:
+      - "8010:8000"
+    env_file:
+      - ./backend-video-embedding/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health\")'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
