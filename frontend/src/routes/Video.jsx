@@ -13,6 +13,13 @@ const Video = () => {
 
   return (
     <div>
+      <a
+        className="block font-semibold text-xl mb-4 w-fit"
+        href={`https://www.youtube.com/watch?v=${id}`}
+        target="_blank"
+      >
+        https://www.youtube.com/watch?v={id}
+      </a>
       <div className="flex flex-col md:flex-row gap-2">
         {/* VIDEO */}
         <div className=" w-full md:h-[90vh]  flex flex-col">

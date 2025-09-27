@@ -16,6 +16,7 @@ const SearchBar = () => {
     setError("");
     if (value.length === 0) {
       setError("URL must not be empty");
+
       return;
     }
     const id = value.match(re)?.[2];
@@ -23,9 +24,11 @@ const SearchBar = () => {
       setError(
         "URL must be a valid youtube link e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
       );
+
       return;
     }
     setValue("");
+
     nav("/v/" + id);
     console.log(value);
   };
@@ -47,7 +50,7 @@ const SearchBar = () => {
         name="search"
         id="search"
         className="shadow-sm p-2 w-full rounded-md bg-primary"
-        placeholder="       Search"
+        placeholder="       https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         onChange={handleChange}
         onKeyDown={(e) => {
           if (e.key === "Enter") handleSubmit();

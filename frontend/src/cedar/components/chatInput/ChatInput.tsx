@@ -209,49 +209,6 @@ export const ChatInput: React.FC<{
           </div>
         )}
       </div>
-
-      {/* Bottom rows. Contains tools and send chat button */}
-      <div
-        id="input-tools"
-        className="flex items-center  space-x-2  justify-between"
-      >
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className={getMicButtonClass()}
-            onClick={handleVoiceToggle}
-            disabled={
-              voice.voicePermissionStatus === "denied" ||
-              voice.voicePermissionStatus === "not-supported"
-            }
-            title={
-              voice.isListening
-                ? "Stop recording"
-                : voice.isSpeaking
-                ? "Speaking..."
-                : voice.voicePermissionStatus === "denied"
-                ? "Microphone access denied"
-                : voice.voicePermissionStatus === "not-supported"
-                ? "Voice not supported"
-                : "Start voice chat (M)"
-            }
-          >
-            <Mic className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            className="p-1 text-gray-600 dark:text-gray-200 hover:text-black dark:hover:text-white cursor-pointer"
-          >
-            <Image className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            className="p-1 text-gray-600 dark:text-gray-200 hover:text-black dark:hover:text-white cursor-pointer"
-          >
-            <Code className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

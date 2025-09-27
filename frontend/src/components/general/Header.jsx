@@ -3,6 +3,7 @@ import SearchBar from "./SearchBar";
 import SideBar from "./Sidebar";
 import Menu from "./Menu";
 import { useNavigate } from "react-router-dom";
+import Icon from "../../assets/icon.png";
 
 const Header = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -10,8 +11,15 @@ const Header = () => {
 
   return (
     <div className="relative flex justify-between items-center p-3 py-2 bg-primary shadow-sm">
-      <div className="" onClick={() => nav("/")}>
-        Fact Check
+      <div
+        className="cursor-pointer flex flex-row justify-center items-center text-2xl font-semibold"
+        onClick={() => nav("/")}
+      >
+        <img src={Icon} className="w-10" />
+        <div className="flex flex-row gap-1">
+          <h1 className="text-blueAccent">News</h1>
+          <h1 className="text-redAccent">Cap</h1>
+        </div>
       </div>
       <Menu showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
       <div className="hidden md:flex w-1/2">
