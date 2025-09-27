@@ -2,7 +2,7 @@ import { CedarCaptionChat } from "../../../cedar/components/chatComponents/Cedar
 
 const DeepSearch = () => {
   return (
-    <div className="relative bg-primary shadow-md rounded-md p-2 h-full">
+    <div className="relative bg-primary md:shadow-md rounded-md p-2 h-full w-full">
       <h1 className="font-bold">Deep-Dive Search</h1>
       <CedarCaptionChat className="" />
     </div>

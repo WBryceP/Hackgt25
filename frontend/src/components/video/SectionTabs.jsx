@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ClaimAnswer from "./sections/ClaimAnswer";
 import DeepSearch from "./sections/DeepSearch";
 import Sources from "./sections/Sources";
@@ -115,6 +115,22 @@ const SectionTabs = () => {
     color: "#3b82f6",
   });
 
+  const [windowWidth, setWindowWidth] = useState(0);
+  const resizeFunc = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", resizeFunc);
+
+    return () => window.removeEventListener("resize", resizeFunc);
+  }, []);
+
+  useEffect(() => {
+    setSelectedTab(windowWidth > 768 ? 1 : 0);
+  }, [windowWidth]);
+
   const TabComponents = tabs.map((tab, index) => {
     return (
       <li
@@ -142,7 +158,10 @@ const SectionTabs = () => {
         {TabComponents.slice(1, TabComponents.length)}
       </ul>
 
-      <div className="p-2 relative h-[82vh]   overflow-scroll ">
+      <div className="hidden md:flex p-2 relative h-[82vh]   overflow-scroll ">
+        {content[selectedTab]}
+      </div>
+      <div className="flex md:hidden p-2 relative h-[82vh] overflow-scroll">
         {content[selectedTab]}
       </div>
     </div>
