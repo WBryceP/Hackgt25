@@ -9,7 +9,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN uv pip install --system --no-cache -r requirements.txt
 
-COPY main.py .
+# Copy application files
+COPY main.py models.py exa_service.py .
+COPY .env .
 
 EXPOSE 8000
 

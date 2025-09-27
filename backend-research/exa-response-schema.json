@@ -1,0 +1,31 @@
+{
+  "description": "Schema describing a fact-check of a claim",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "A very short title for the claim made"
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the claim made. Keep the description without fluff like a news sub-headline."
+    },
+    "truthfulnessScore": {
+      "type": "integer",
+      "description": "A truthfulness score between 1-5. The score should represent 1 - Untrue, 2-Mostly Untrue 3-Mix of Truth 4-Mostly True 5-True",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "response": {
+      "type": "string",
+      "description": "A medium-length response summarizing why the claim is true or untrue"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "truthfulnessScore",
+    "response"
+  ],
+  "additionalProperties": false
+}
