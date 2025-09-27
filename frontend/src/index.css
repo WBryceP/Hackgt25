@@ -3,7 +3,7 @@
 @theme {
   --color-primary: #fffcfb;
   --color-primaryInvert: #000000;
-  --color-body: #f7fcfc;
+  --color-body: oklch(97% 0 0);
 
   --color-redAccent: #ed3500;
   --color-blueAccent: #093fb4;

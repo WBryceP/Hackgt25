@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import SectionTabs from "../components/video/SectionTabs";
+import DeepSearch from "../components/video/sections/DeepSearch";
 
 const Video = () => {
   const { id } = useParams();
@@ -11,11 +12,19 @@ const Video = () => {
   }, [id]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-2">
-      {/* VIDEO */}
-      <div className="w-full bg-primaryInvert aspect-square rounded-sm" />
-      {/* Tabs */}
-      <SectionTabs />
+    <div>
+      <div className="flex flex-col md:flex-row gap-2">
+        {/* VIDEO */}
+        <div className=" w-full h-[90vh]  flex flex-col">
+          <div className="w-full bg-primaryInvert aspect-video rounded-sm mb-2" />
+          <div className="hidden md:block grow">
+            <DeepSearch />
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <SectionTabs />
+      </div>
     </div>
   );
 };

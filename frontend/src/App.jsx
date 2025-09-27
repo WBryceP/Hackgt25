@@ -1,3 +1,4 @@
+"use client";
 import Layout from "./layout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CedarCopilot } from "cedar-os";
@@ -13,14 +14,15 @@ function App() {
         baseURL: "http://localhost:3000/api/llm", // your backend
       }}
     >
-      <Layout>
-        <BrowserRouter>
+      <BrowserRouter>
+        {" "}
+        <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/v/:id" element={<Video />} />
-          </Routes>
-        </BrowserRouter>
-      </Layout>
+          </Routes>{" "}
+        </Layout>
+      </BrowserRouter>
     </CedarCopilot>
   );
 }
