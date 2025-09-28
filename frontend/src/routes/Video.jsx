@@ -109,7 +109,7 @@ const Video = ({ setError }) => {
         {/* VIDEO */}
         <div className="w-full flex flex-col">
           <YouTube
-            className="w-full aspect-video border"
+            className="w-full aspect-video"
             iframeClassName="w-full h-full"
             videoId={id}
             opts={{
