@@ -16,9 +16,9 @@ if module_env_path.exists():
 
 @dataclass
 class TLParams:
-    model_name: str = "pegasus1.2"
     video_url: str
     index_name: str
+    model_name: str = "pegasus1.2"
     model_options: Optional[List[str]] = None
 
 

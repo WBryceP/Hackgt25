@@ -5,8 +5,10 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /app
 
-# Dependencies
+# Copy requirements first for better Docker layer caching
 COPY requirements.txt .
+
+# Install dependencies with uv (faster than pip)
 RUN uv pip install --system --no-cache -r requirements.txt
 
 # App files
