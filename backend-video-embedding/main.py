@@ -10,7 +10,8 @@ from highlight_service import HighlightService, TLParams
 PROMPT = (
     "Extract segments where someone is stating a fact or making a claim, showing "
     "numbers, or graphs and charts. Prefer segments that are informative "
-    "or where the speaker is trying to be convincing."
+    "or where the speaker is trying to be convincing. In your summary "
+    "be sure to include the fact or claim they are making in detail."
 )
 TEMPERATURE = 0.5
 MODEL_OPTIONS = ["visual", "audio"]
