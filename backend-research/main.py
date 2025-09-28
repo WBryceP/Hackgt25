@@ -1,5 +1,5 @@
 import json
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request, Response
 from pydantic import BaseModel, HttpUrl, field_validator
 import os, httpx, uuid
 from ytdl import download_to_disk
@@ -39,6 +39,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Middleware to handle HEAD requests
+@app.middleware("http")
+async def head_request_middleware(request: Request, call_next):
+   if request.method == "HEAD":
+       # Convert HEAD to GET and return only headers
+       request.scope["method"] = "GET"
+       response = await call_next(request)
+       return Response(status_code=response.status_code, headers=response.headers)
+   return await call_next(request)
 
 # Initialize Exa service
 def get_exa_service() -> ExaService:
