@@ -3,6 +3,7 @@ import { useState } from "react";
 const useDownloadVideo = () => {
   const [loading, setLoading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
+  const [downloadVideoResult, setDownloadVideoResult] = useState(null);
 
   const downloadVideo = async (url) => {
     const re =
@@ -14,7 +15,8 @@ const useDownloadVideo = () => {
 
     try {
       setLoading(true);
-      let res = await fetch(import.meta.env.BACKEND_URL + "/download", {
+
+      let res = await fetch(import.meta.env.VITE_BACKEND_URL + "/download", {
         method: "POST",
         body: JSON.stringify({
           url: url,
@@ -31,7 +33,7 @@ const useDownloadVideo = () => {
       if (!jobId) {
         throw new Error("Error: jobId is invalid");
       }
-      url = new URL(import.meta.env.BACKEND_URL + "/status/" + jobId);
+      url = new URL(import.meta.env.VITE_BACKEND_URL + "/status/" + jobId);
 
       res = await fetch(url);
       data = await res.json();
@@ -48,20 +50,25 @@ const useDownloadVideo = () => {
       }
 
       url = new URL(
-        import.meta.env.BACKEND_URL + "/downloadFile/" + jobId + "/" + fileName
+        import.meta.env.VITE_BACKEND_URL +
+          "/downloadFile/" +
+          jobId +
+          "/" +
+          fileName
       );
       res = await fetch(url);
       data = await res.json();
-      return data;
+      setDownloadVideoResult(data);
     } catch (error) {
       setDownloadError("Error while downloading video: " + error);
       return;
     } finally {
       setLoading(false);
+      setDownloadVideoResult(null);
     }
   };
 
-  return [downloadVideo, downloadError, loading];
+  return [downloadVideo, downloadVideoResult, downloadError, loading];
 };
 
 export default useDownloadVideo;
