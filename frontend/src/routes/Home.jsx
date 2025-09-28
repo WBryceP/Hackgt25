@@ -8,36 +8,30 @@ const Home = () => {
 
   return (
     <div className="flex flex-col">
-      <div className=" p-2 flex flex-col md:flex-row gap-8 items-end justify-around">
+      <div className="sm:p-4 md:p-8 lg:p-12 flex flex-col md:flex-row gap-8 items-center lg:items-end justify-around">
         <div className="p-4 rounded-md w-fit">
           <div className=" mt-18 flex flex-col justify-center">
-            <div className="text-4xl sm:text-5xl font-bold">
+            <div className="text-4xl md:text-5xl xl:text-6xl font-bold">
               <div className="flex flex-row gap-2">
                 <motion.h1
+                  className="text-redAccent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, color: "#ed3500" }}
                   transition={{
                     ease: "easeInOut",
                     duration: 0.3,
-                    color: {
-                      delay: 1.65,
-                      duration: 0.3,
-                    },
                   }}
                 >
                   Truth
                 </motion.h1>
                 <motion.h1
+                  className="text-blueAccent"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, color: "#093fb4" }}
                   transition={{
                     delay: 0.4,
                     ease: "easeInOut",
                     duration: 0.5,
-                    color: {
-                      delay: 1.65,
-                      duration: 0.3,
-                    },
                   }}
                 >
                   Matters.
@@ -53,7 +47,7 @@ const Home = () => {
               </motion.h1>
             </div>
 
-            <p className=" mt-8 text-base lg:w-84 ">
+            <p className=" mt-8 text-base lg:w-2/3 ">
               Check political claims, uncover the truth, and cut through the
               spin with fact-checking you can trust — all powered by our
               AI-native video player.
