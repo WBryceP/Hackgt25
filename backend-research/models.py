@@ -1,9 +1,11 @@
-﻿from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 
 
 class FactCheckRequest(BaseModel):
+    startSec: float = Field(..., description="The start second of the claim", ge=0)
+    endSec: float = Field(..., description="The end second of the claim", gt=0)
     claim: str = Field(..., description="The claim to fact-check", min_length=1)
 
 
@@ -60,6 +62,8 @@ class ExaAnswerResponse(BaseModel):
 
 
 class FactCheckResponse(BaseModel):
+    startSec: float = Field(..., description="The start second of the claim", ge=0)
+    endSec: float = Field(..., description="The end second of the claim", gt=0)
     title: str = Field(..., description="A very short title for the claim made")
     description: str = Field(..., description="A description of the claim made. Keep the description without fluff like a news sub-headline.")
     truthfulnessScore: int = Field(
