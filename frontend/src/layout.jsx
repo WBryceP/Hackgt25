@@ -4,7 +4,6 @@ const Layout = ({ children }) => {
     <div className="bg-body text-primaryInvert min-h-screen text-xs sm:text-sm">
       <Header />
       <div className="p-4">{children}</div>
-      <div className="">Footer</div>
     </div>
   );
 };

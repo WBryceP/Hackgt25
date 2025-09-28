@@ -16,8 +16,13 @@ const useDownloadVideo = () => {
     try {
       setLoading(true);
       console.log(url);
+
+      // POST /download
       let res = await fetch(import.meta.env.VITE_BACKEND_URL + "/download", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           url: url,
           format: "mp4",
@@ -29,35 +34,66 @@ const useDownloadVideo = () => {
       if (data?.status !== "ok") {
         throw new Error("Error: status is not ok on downlod");
       }
+      console.log(data);
       const jobId = data.jobId;
       if (!jobId) {
         throw new Error("Error: jobId is invalid");
       }
       url = new URL(import.meta.env.VITE_BACKEND_URL + "/status/" + jobId);
 
-      res = await fetch(url);
-      data = await res.json();
-      if (data?.status !== "ok") {
-        throw new Error("Error: status is not ok on checking jobId");
-      }
-      if (data?.data?.status !== "completed") {
-        throw new Error("Error: download is not complete");
+      // GET /status
+      let fileName;
+
+      while (true) {
+        const res = await fetch(url);
+        const data = await res.json();
+        console.log(data);
+
+        // Transport / API status
+        if (data?.status !== "ok") {
+          throw new Error("Error: status is not ok on checking jobId");
+        }
+
+        // Job status
+        if (data?.data?.status === "completed") {
+          console.log("Job completed!");
+          fileName = data?.data?.filename;
+          console.log(fileName);
+          break;
+        }
+
+        await sleep(2500); // wait before next request
       }
 
-      const fileName = data?.data?.fileName;
       if (!fileName) {
         throw new Error("Error: fileName is invalid");
       }
-
+      console.log(jobId);
+      console.log(fileName);
       url = new URL(
         import.meta.env.VITE_BACKEND_URL +
           "/downloadFile/" +
           jobId +
           "/" +
-          fileName
+          jobId +
+          ".mp4"
       );
+      console.log(url);
+
+      // GET /downloadFile
       res = await fetch(url);
       data = await res.json();
+      console.log(data);
+
+      const directUrl = data.direct_video_url;
+      if (!directUrl) {
+        throw new Error("Error: could not get direct download url");
+      }
+
+      // GET /Direct Download GET
+      res = await fetch(directUrl);
+      data = await res.json();
+      url = new URL();
       setDownloadVideoResult(data);
     } catch (error) {
       setDownloadError("Error while downloading video: " + error);
@@ -72,3 +108,7 @@ const useDownloadVideo = () => {
 };
 
 export default useDownloadVideo;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

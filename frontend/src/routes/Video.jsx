@@ -13,7 +13,7 @@ const Video = ({ setError }) => {
   const [downloadVideo, downloadError, loading] = useDownloadVideo();
 
   useEffect(() => {
-    downloadVideo(`https://www.youtube.com/watch?v=${id}`);
+    // downloadVideo(`https://www.youtube.com/watch?v=${id}`);
   }, [id]);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const Video = ({ setError }) => {
   }, [downloadError]);
 
   return (
-    <div>
+    <div className="max-h-[150vh] h-[130vh]">
       <a
         className="block font-semibold text-xl mb-4 w-fit"
         href={`https://www.youtube.com/watch?v=${id}`}
@@ -34,15 +34,21 @@ const Video = ({ setError }) => {
       </a>
       <div className="flex flex-col md:flex-row gap-2">
         {/* VIDEO */}
+
         <div className=" w-full md:h-[90vh]  flex flex-col">
-          <div className="w-full bg-primaryInvert aspect-video rounded-sm mb-2 justify-center flex items-center">
-            <Loader />
-          </div>
+          <iframe
+            className="w-full aspect-video"
+            src={`https://www.youtube.com/embed/${id}`}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+
           <div className="hidden md:block grow">
             <DeepSearch />
           </div>
         </div>
-
         {/* Tabs */}
         <SectionTabs />
       </div>

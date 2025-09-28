@@ -160,12 +160,7 @@ export const ChatInput: React.FC<{
   }, [handleVoiceToggle]);
 
   return (
-    <div
-      className={cn(
-        "bg-gray-800/10 dark:bg-gray-600/80 rounded-lg p-3 text-sm",
-        className
-      )}
-    >
+    <div className={cn("rounded-lg p-3 text-sm", className)}>
       {/* Input context row showing selected context nodes */}
       <ContextBadgeRow editor={editor} />
 

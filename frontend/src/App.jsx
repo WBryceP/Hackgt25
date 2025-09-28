@@ -13,8 +13,8 @@ function App() {
   return (
     <CedarCopilot
       llmProvider={{
-        provider: "custom",
-        baseURL: "http://localhost:3000/api/llm", // your backend
+        provider: "openai",
+        apiKey: import.meta.env.VITE_OPENAI_KEY,
       }}
     >
       <BrowserRouter>

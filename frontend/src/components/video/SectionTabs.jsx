@@ -13,34 +13,63 @@ const SectionTabs = () => {
       momentContext: "USA es numero uno",
     },
   ]);
-  const [sources, setSources] = useState([
-    { sourceName: "CBO 2024 deficit report", sourceContent: "" },
-    {
-      sourceName: "FactCheck.org: Candidate X claim",
-      sourceContent: "",
-    },
-    { sourceName: "BLS CPI release (Aug 2025)", sourceContent: "" },
-  ]);
+
   const [claimsAnswers, setClaimsAnswers] = useState([
     {
       claim:
         "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
       confidence: 0,
+      sources: [
+        {
+          sourceName: "CBO 2024 deficit report",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+        {
+          sourceName: "FactCheck.org: Candidate X claim",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+      ],
     },
     {
       claim:
         "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
       confidence: 0,
+      sources: [
+        {
+          sourceName: "CBO 2024 deficit report",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+        {
+          sourceName: "FactCheck.org: Candidate X claim",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+      ],
     },
     {
       claim:
         "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
       confidence: 0,
+      sources: [
+        {
+          sourceName: "CBO 2024 deficit report",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+        {
+          sourceName: "FactCheck.org: Candidate X claim",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+      ],
     },
     {
       claim:
         "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
       confidence: 0,
+      sources: [
+        {
+          sourceName: "CBO 2024 deficit report",
+          sourceURL: "https://gemini.google/students/?hl=en",
+        },
+      ],
     },
   ]);
 
@@ -48,7 +77,7 @@ const SectionTabs = () => {
     { name: "Search", shortened: "Search" },
     { name: "Claim & Answer", shortened: "Claim" },
     { name: "Flagged Moments", shortened: "Moments" },
-    { name: "Sources", shortened: "Sources" },
+    // { name: "Sources", shortened: "Sources" },
   ];
 
   const content = [
@@ -61,7 +90,7 @@ const SectionTabs = () => {
       flaggedMoments={flaggedMoments}
       setFlaggedMoments={setFlaggedMoments}
     />,
-    <Sources sources={sources} setSources={sources} />,
+    // <Sources sources={sources} setSources={sources} />,
   ];
 
   // Claims
@@ -98,22 +127,22 @@ const SectionTabs = () => {
   });
 
   // Sources
-  useRegisterState({
-    key: "sources",
-    description:
-      "a list of sources that provide context to claims made by politicians (and whether or not their statements are true)",
-    value: sources,
-    setValue: setSources,
-  });
-  useStateBasedMentionProvider({
-    stateKey: "sources",
-    trigger: "@",
-    labelField: "sourceName",
-    order: 10,
-    description: "Sources",
-    icon: "🔎",
-    color: "#3b82f6",
-  });
+  // useRegisterState({
+  //   key: "sources",
+  //   description:
+  //     "a list of sources that provide context to claims made by politicians (and whether or not their statements are true)",
+  //   value: sources,
+  //   setValue: setSources,
+  // });
+  // useStateBasedMentionProvider({
+  //   stateKey: "sources",
+  //   trigger: "@",
+  //   labelField: "sourceName",
+  //   order: 10,
+  //   description: "Sources",
+  //   icon: "🔎",
+  //   color: "#3b82f6",
+  // });
 
   const [windowWidth, setWindowWidth] = useState(0);
   const resizeFunc = () => {
