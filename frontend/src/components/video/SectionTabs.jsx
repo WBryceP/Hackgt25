@@ -8,8 +8,12 @@ import {
   useStateBasedMentionProvider,
   useSubscribeStateToAgentContext,
 } from "cedar-os";
+import { useNavigate } from "react-router-dom";
+import useDownloadVideo from "../../functions/downloadVideoPipeline";
 
-const SectionTabs = ({ loading, error }) => {
+const SectionTabs = ({ id, setError }) => {
+  const nav = useNavigate();
+
   const [selectedTab, setSelectedTab] = useState(1);
   const [flaggedMoments, setFlaggedMoments] = useState([
     {
@@ -18,64 +22,37 @@ const SectionTabs = ({ loading, error }) => {
     },
   ]);
 
-  const [claimsAnswers, setClaimsAnswers] = useState([
-    {
-      claim:
-        "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
-      confidence: 0,
-      sources: [
-        {
-          sourceName: "CBO 2024 deficit report",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-        {
-          sourceName: "FactCheck.org: Candidate X claim",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-      ],
-    },
-    {
-      claim:
-        "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
-      confidence: 0,
-      sources: [
-        {
-          sourceName: "CBO 2024 deficit report",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-        {
-          sourceName: "FactCheck.org: Candidate X claim",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-      ],
-    },
-    {
-      claim:
-        "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
-      confidence: 0,
-      sources: [
-        {
-          sourceName: "CBO 2024 deficit report",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-        {
-          sourceName: "FactCheck.org: Candidate X claim",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-      ],
-    },
-    {
-      claim:
-        "This video claims that the Great Barrier Reef has lost over 90% of its coral in the last 5 years.",
-      confidence: 0,
-      sources: [
-        {
-          sourceName: "CBO 2024 deficit report",
-          sourceURL: "https://gemini.google/students/?hl=en",
-        },
-      ],
-    },
-  ]);
+  const [claimsAnswers, setClaimsAnswers] = useState([]);
+
+  const [
+    downloadVideo,
+    downloadVideoResult,
+    downloadError,
+    loading,
+    setDownloadVideoResult,
+  ] = useDownloadVideo();
+
+  useEffect(() => {
+    downloadVideo("https://www.youtube.com/watch?v=" + id);
+  }, [id]);
+
+  useEffect(() => {
+    if (downloadVideoResult?.length > 0) {
+      console.log(downloadVideoResult?.factCheck);
+      console.log(downloadVideoResult?.clip);
+      setClaimsAnswers(downloadVideoResult.map((item) => item.factCheck));
+      setFlaggedMoments(downloadVideoResult.map((item) => item.clip));
+
+      setDownloadVideoResult(null);
+    }
+  }, [downloadVideoResult]);
+
+  useEffect(() => {
+    if (downloadError.length > 0) {
+      setError(downloadError); // if setError expects a string, pass a message instead
+      nav("/error");
+    }
+  }, [downloadError, nav, setError]);
 
   const tabs = [
     { name: "Search", shortened: "Search" },
@@ -221,7 +198,7 @@ const SectionTabs = ({ loading, error }) => {
         <div className="w-full h-1/3 flex justify-center items-center">
           <Loader />
         </div>
-      ) : error.length > 0 ? (
+      ) : downloadError.length > 0 ? (
         <div className="text-lowText text-center text-2xl h-1/3 justify-center items-center flex">
           There was an error while retrieving your video
         </div>

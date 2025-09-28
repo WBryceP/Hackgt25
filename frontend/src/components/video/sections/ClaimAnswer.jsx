@@ -13,9 +13,9 @@ const ClaimAnswer = ({ claimsAnswers, setClaimAnswers }) => {
             <BubbleBox
               key={claim + "-" + index}
               header={"Claim"}
-              content={claim.claim}
-              sources={claim.sources}
-              confidence={claim.confidence}
+              content={claim?.description}
+              sources={claim?.sources}
+              confidence={Math.floor((claim?.truthfulnessScore * 3) / 5)}
             />
           );
         })}

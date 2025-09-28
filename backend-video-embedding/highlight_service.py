@@ -63,7 +63,7 @@ class HighlightService:
             print(f"Upload complete. The unique identifier of your video is {task.video_id}.")
             video_id = task.video_id
         else:
-            video_id = '68d8da029035da6ed7552436'
+            video_id = '68d916bcab29c1e01ef84ede'
 
         # 3) Summarize highlights
         res = self.client.summarize(

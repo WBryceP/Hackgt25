@@ -84,24 +84,33 @@ const useDownloadVideo = () => {
       res = await fetch(url);
       data = await res.json();
       const videoURL = data?.direct_video_url;
+      console.log(data);
 
-      res = await fetch("localhost:8001/highlight_enriched", {
+      res = await fetch("http://127.0.0.1:8001/highlights_enriched", {
         method: "POST",
-        body: JSON.stringify({ downloadURL: videoURL }),
+        body: JSON.stringify({ downloadUrl: videoURL }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       data = await res.json();
-
+      console.log(data);
       setDownloadVideoResult(data);
     } catch (error) {
       setDownloadError("Error while downloading video: " + error);
       return;
     } finally {
       setLoading(false);
-      setDownloadVideoResult(null);
     }
   };
 
-  return [downloadVideo, downloadVideoResult, downloadError, loading];
+  return [
+    downloadVideo,
+    downloadVideoResult,
+    downloadError,
+    loading,
+    setDownloadVideoResult,
+  ];
 };
 
 export default useDownloadVideo;

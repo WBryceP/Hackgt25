@@ -8,6 +8,8 @@ from fastapi import FastAPI, HTTPException
 from models import EmbedRequest, Clip, FactCheckResponse, EnrichedClip
 import httpx
 from highlight_service import HighlightService, TLParams
+from fastapi.middleware.cors import CORSMiddleware
+
 
 RESEARCH_HOST = os.getenv("RESEARCH_HOST", "http://backend-research:8000")
 FACTCHECK_PATH = "/fact-check"                        # lives on backend-research
@@ -26,6 +28,14 @@ MODEL_OPTIONS = ["visual", "audio"]
 TEST_FLAG = True
 
 app = FastAPI(title="Embedding API", version="1.1.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure this properly in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _index_name_from_url(url: str, max_len: int = 63) -> str:

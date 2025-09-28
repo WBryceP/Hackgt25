@@ -52,10 +52,10 @@ const BubbleBox = ({ header, content, sources, confidence }) => {
               <motion.a
                 className="mx-1 p-1 rounded-sm outline outline-placeholder/50 text-start cursor-pointer"
                 whileHover={{ scale: 1.03, translateX: 5 }}
-                href={source.sourceURL}
+                href={source.url}
                 target="_blank"
               >
-                {source.sourceName}
+                {source?.url}
               </motion.a>
             </div>
           ))}

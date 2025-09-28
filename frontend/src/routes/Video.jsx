@@ -12,7 +12,6 @@ const POLL_MS = 500;
 
 const Video = ({ setError }) => {
   const { id } = useParams();
-  const nav = useNavigate();
 
   const playerRef = useRef(null);
   const pendingSeekRef = useRef(null);
@@ -68,14 +67,6 @@ const Video = ({ setError }) => {
     },
   });
 
-  const [downloadVideo, downloadVideoResult, downloadError, loading] =
-    useDownloadVideo();
-
-  useEffect(() => {
-    console.log(id);
-    downloadVideo(id);
-  }, [id]);
-
   const onReady = (e) => {
     playerRef.current = e.target;
     e.target.pauseVideo();
@@ -98,13 +89,6 @@ const Video = ({ setError }) => {
     const id = setInterval(tick, POLL_MS);
     return () => clearInterval(id);
   }, []);
-
-  useEffect(() => {
-    if (downloadError === true) {
-      setError(downloadError); // if setError expects a string, pass a message instead
-      nav("/error");
-    }
-  }, [downloadError, nav, setError]);
 
   return (
     <div>
@@ -135,7 +119,7 @@ const Video = ({ setError }) => {
         </div>
 
         {/* Tabs */}
-        <SectionTabs loading={loading} error={downloadError} />
+        <SectionTabs setError={setError} id={id} />
       </div>
     </div>
   );
