@@ -35,7 +35,7 @@ const BubbleBox = ({
                 ][confidence]
               }`}
             >
-              Confidence: {confidenceValues[confidence]}
+              Truthfulness: {confidenceValues[confidence]}
             </div>
           ) : null}
         </div>
