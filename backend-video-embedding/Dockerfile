@@ -10,7 +10,7 @@ COPY requirements.txt .
 RUN uv pip install --system --no-cache -r requirements.txt
 
 # App files
-COPY main.py models.py twelvelabs_service.py .
+COPY main.py models.py highlight_service.py /app/
 
 EXPOSE 8000
 
