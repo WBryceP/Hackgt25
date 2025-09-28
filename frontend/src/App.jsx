@@ -1,11 +1,15 @@
+"use client";
 import Layout from "./layout";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CedarCopilot } from "cedar-os";
+import { useState } from "react";
 
 import Home from "./routes/Home";
 import Video from "./routes/Video";
+import Error from "./routes/Error";
 
 function App() {
+  const [error, setError] = useState("");
   return (
     <CedarCopilot
       llmProvider={{
@@ -13,14 +17,15 @@ function App() {
         baseURL: "http://localhost:3000/api/llm", // your backend
       }}
     >
-      <Layout>
-        <BrowserRouter>
+      <BrowserRouter>
+        <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/v/:id" element={<Video />} />
+            <Route path="/v/:id" element={<Video setError={setError} />} />
+            <Route path="/error" element={<Error />} error={error} />
           </Routes>
-        </BrowserRouter>
-      </Layout>
+        </Layout>
+      </BrowserRouter>
     </CedarCopilot>
   );
 }

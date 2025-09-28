@@ -1,12 +1,10 @@
 const BubbleBox = ({ header, content, confidence }) => {
   const confidenceValues = ["low", "medium", "high"];
   return (
-    <div className="rounded-md shadow-sm outline-placeholder/10 outline p-2">
+    <div className="rounded-lg shadow-sm outline-placeholder/10 outline p-2">
       <h1 className="font-bold mb-1">{header}</h1>
-      <div className="flex flex-col md:flex-row justify-between">
-        <p className={`${confidence !== undefined ? "md:w-1/2 mb-2" : ""}`}>
-          {content}
-        </p>
+      <div className="flex flex-col justify-between">
+        <p className={`${confidence !== undefined ? "mb-2" : ""}`}>{content}</p>
         {confidence !== undefined ? (
           <div
             className={`border-1 text-center rounded-full w-fit px-3 p-1 flex justify-center items-center h-fit ${

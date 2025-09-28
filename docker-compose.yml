@@ -1,10 +1,12 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   backend-research:
     build:
       context: ./backend-research
       dockerfile: Dockerfile
+    volumes:
+      - ./local_videos:/backend-research/downloaded_videos
     ports:
       - "8000:8000"
     env_file:
@@ -16,6 +18,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
   backend-video-embedding:
     build:
       context: ./backend-video-embedding
