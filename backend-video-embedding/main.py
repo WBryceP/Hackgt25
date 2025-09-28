@@ -10,10 +10,12 @@ from highlight_service import HighlightService, TLParams
 PROMPT = (
     "Extract segments where someone is stating a fact or making a claim, showing "
     "numbers, or graphs and charts. Prefer segments that are informative "
-    "or where the speaker is trying to be convincing."
+    "or where the speaker is trying to be convincing. In your summary "
+    "be sure to include the fact or claim they are making in detail."
 )
 TEMPERATURE = 0.5
 MODEL_OPTIONS = ["visual", "audio"]
+TEST_FLAG = True
 
 app = FastAPI(title="Embedding API", version="1.1.0")
 
@@ -45,6 +47,7 @@ def create_highlights(req: EmbedRequest):
             video_url=str(req.downloadUrl),
             index_name=index_name,
             model_options=MODEL_OPTIONS,
+            test_flag=TEST_FLAG,
         )
         svc = HighlightService(params)
         raw = svc.run(prompt=PROMPT, temperature=TEMPERATURE)
