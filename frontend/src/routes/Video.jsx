@@ -81,6 +81,10 @@ const Video = ({ setError }) => {
     }
   };
 
+  const seekFunction = (start) => {
+    playerRef.current.seekTo(start, true);
+  };
+
   useEffect(() => {
     const tick = () => {
       const t = playerRef.current?.getCurrentTime?.();
@@ -119,7 +123,7 @@ const Video = ({ setError }) => {
         </div>
 
         {/* Tabs */}
-        <SectionTabs setError={setError} id={id} />
+        <SectionTabs setError={setError} id={id} seekFunction={seekFunction} />
       </div>
     </div>
   );

@@ -3,10 +3,16 @@ import { useNavigate } from "react-router-dom";
 import BranchIcon from "../../assets/branch.png";
 import { motion } from "framer-motion";
 
-const BubbleBox = ({ header, content, sources, confidence }) => {
+const BubbleBox = ({
+  header,
+  content,
+  sources,
+  confidence,
+  hasSources = true,
+}) => {
   const [showSources, setShowSources] = useState(false);
 
-  const confidenceValues = ["low", "medium", "high"];
+  const confidenceValues = ["low", "medium", "high", "very high"];
   return (
     <>
       <div
@@ -25,6 +31,7 @@ const BubbleBox = ({ header, content, sources, confidence }) => {
                   "border-lowBorder text-lowText bg-lowBg",
                   "border-mediumBorder text-mediumText bg-mediumBg",
                   "border-highBorder text-highText bg-highBg",
+                  "border-highBorder text-highText bg-highBg",
                 ][confidence]
               }`}
             >
@@ -33,7 +40,7 @@ const BubbleBox = ({ header, content, sources, confidence }) => {
           ) : null}
         </div>
       </div>
-      {showSources ? (
+      {hasSources && showSources ? (
         <ul className="gap-2 flex flex-col">
           {sources.map((source, index) => (
             <div className="flex flex-row relative">

@@ -11,16 +11,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import useDownloadVideo from "../../functions/downloadVideoPipeline";
 
-const SectionTabs = ({ id, setError }) => {
+const SectionTabs = ({ id, setError, seekFunction }) => {
   const nav = useNavigate();
 
   const [selectedTab, setSelectedTab] = useState(1);
-  const [flaggedMoments, setFlaggedMoments] = useState([
-    {
-      momentName: "USA has the best economy",
-      momentContext: "USA es numero uno",
-    },
-  ]);
+  const [flaggedMoments, setFlaggedMoments] = useState([]);
 
   const [claimsAnswers, setClaimsAnswers] = useState([]);
 
@@ -70,6 +65,7 @@ const SectionTabs = ({ id, setError }) => {
     <FlaggedMoments
       flaggedMoments={flaggedMoments}
       setFlaggedMoments={setFlaggedMoments}
+      seekFunction={seekFunction}
     />,
     // <Sources sources={sources} setSources={sources} />,
   ];
@@ -83,7 +79,7 @@ const SectionTabs = ({ id, setError }) => {
   useStateBasedMentionProvider({
     stateKey: "claimsAnswers",
     trigger: "@",
-    labelField: "claim",
+    labelField: "description",
     order: 10,
     description: "Claims",
     icon: "🔎",
@@ -100,7 +96,7 @@ const SectionTabs = ({ id, setError }) => {
   useStateBasedMentionProvider({
     stateKey: "flaggedMoments",
     trigger: "@",
-    labelField: "momentName",
+    labelField: "description",
     order: 10,
     description: "Moments",
     icon: "🔎",
