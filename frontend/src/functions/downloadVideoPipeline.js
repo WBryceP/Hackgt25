@@ -83,17 +83,7 @@ const useDownloadVideo = () => {
       // GET /downloadFile
       res = await fetch(url);
       data = await res.json();
-      console.log(data);
 
-      const directUrl = data.direct_video_url;
-      if (!directUrl) {
-        throw new Error("Error: could not get direct download url");
-      }
-
-      // GET /Direct Download GET
-      res = await fetch(directUrl);
-      data = await res.json();
-      url = new URL();
       setDownloadVideoResult(data);
     } catch (error) {
       setDownloadError("Error while downloading video: " + error);

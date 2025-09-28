@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BranchIcon from "../../assets/branch.png";
+import { motion } from "framer-motion";
 
 const BubbleBox = ({ header, content, sources, confidence }) => {
   const [showSources, setShowSources] = useState(false);
@@ -49,9 +50,14 @@ const BubbleBox = ({ header, content, sources, confidence }) => {
                 </div>
               ) : null}
 
-              <button className="p-1 rounded-sm outline outline-placeholder/50 text-start">
+              <motion.a
+                className="mx-1 p-1 rounded-sm outline outline-placeholder/50 text-start cursor-pointer"
+                whileHover={{ scale: 1.03, translateX: 5 }}
+                href={source.sourceURL}
+                target="_blank"
+              >
                 {source.sourceName}
-              </button>
+              </motion.a>
             </div>
           ))}
         </ul>

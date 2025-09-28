@@ -24,25 +24,17 @@ const Video = ({ setError }) => {
   }, [downloadError]);
 
   return (
-    <div className="max-h-[150vh] h-[130vh]">
-      <a
-        className="block font-semibold text-xl mb-4 w-fit"
-        href={`https://www.youtube.com/watch?v=${id}`}
-        target="_blank"
-      >
-        https://www.youtube.com/watch?v={id}
-      </a>
+    <div className="">
       <div className="flex flex-col md:flex-row gap-2">
         {/* VIDEO */}
 
-        <div className=" w-full md:h-[90vh]  flex flex-col">
+        <div className=" w-full  flex flex-col">
           <iframe
             className="w-full aspect-video"
             src={`https://www.youtube.com/embed/${id}`}
             title="YouTube video player"
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
+            allowFullScreen={false}
           ></iframe>
 
           <div className="hidden md:block grow">

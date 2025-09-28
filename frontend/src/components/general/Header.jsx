@@ -12,10 +12,10 @@ const Header = () => {
   return (
     <div className="relative flex justify-between items-center p-3 py-2 bg-primary shadow-sm">
       <div
-        className="cursor-pointer flex flex-row justify-center items-center text-2xl font-semibold"
+        className="cursor-pointer flex flex-row justify-center items-center text-3xl font-semibold"
         onClick={() => nav("/")}
       >
-        <img src={Icon} className="w-10" />
+        <img src={Icon} className="w-14" />
         <div className="flex flex-row gap-1">
           <h1 className="text-blueAccent">News</h1>
           <h1 className="text-redAccent">Cap</h1>

@@ -1,7 +1,7 @@
 import SearchBar from "../components/general/SearchBar";
 import DebateVideo from "../assets/debate.mp4";
 import { useRef } from "react";
-import { motion } from "framer-motion";
+import { delay, motion } from "framer-motion";
 
 const Home = () => {
   const videoRef = useRef(null);
@@ -15,15 +15,30 @@ const Home = () => {
               <div className="flex flex-row gap-2">
                 <motion.h1
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ ease: "easeInOut", duration: 0.3 }}
+                  animate={{ opacity: 1, color: "#ed3500" }}
+                  transition={{
+                    ease: "easeInOut",
+                    duration: 0.3,
+                    color: {
+                      delay: 1.65,
+                      duration: 0.3,
+                    },
+                  }}
                 >
                   Truth
                 </motion.h1>
                 <motion.h1
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4, ease: "easeInOut", duration: 0.5 }}
+                  animate={{ opacity: 1, color: "#093fb4" }}
+                  transition={{
+                    delay: 0.4,
+                    ease: "easeInOut",
+                    duration: 0.5,
+                    color: {
+                      delay: 1.65,
+                      duration: 0.3,
+                    },
+                  }}
                 >
                   Matters.
                 </motion.h1>
@@ -44,11 +59,11 @@ const Home = () => {
               AI-native video player.
             </p>
           </div>
-          <div className="max-w-96 mt-8">
+          <div className="max-w-[25rem] mt-8 w-full">
             <SearchBar />
           </div>
         </div>
-        <div className="overflow-hidden h-80 aspect-video">
+        <div className="overflow-hidden w-full max-w-156 aspect-video">
           <video autoPlay muted loop ref={videoRef}>
             <source src={DebateVideo} type="video/mp4" />
           </video>

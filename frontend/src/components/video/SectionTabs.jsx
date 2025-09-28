@@ -178,7 +178,7 @@ const SectionTabs = () => {
   });
 
   return (
-    <div className="bg-primary shadow-md rounded-md md:w-[40%] h-[90vh]">
+    <div className="bg-primary shadow-md rounded-md md:w-[50%]">
       {/* Formats */}
       <ul className="md:hidden flex flex-row w-full justify-between">
         {TabComponents}
@@ -187,10 +187,10 @@ const SectionTabs = () => {
         {TabComponents.slice(1, TabComponents.length)}
       </ul>
 
-      <div className="hidden md:flex p-2 relative h-[82vh]   overflow-scroll ">
+      <div className="hidden md:flex p-2 relative   overflow-scroll ">
         {content[selectedTab]}
       </div>
-      <div className="flex md:hidden p-2 relative h-[82vh] overflow-scroll">
+      <div className="flex md:hidden p-2 relative  overflow-scroll">
         {content[selectedTab]}
       </div>
     </div>

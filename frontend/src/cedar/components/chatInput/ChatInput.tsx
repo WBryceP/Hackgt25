@@ -165,7 +165,10 @@ export const ChatInput: React.FC<{
       <ContextBadgeRow editor={editor} />
 
       {/* Chat editor row */}
-      <div className="relative w-full h-fit max-h-40" id="cedar-chat-input">
+      <div
+        className="relative w-full h-fit max-h-40 overflow-scroll"
+        id="cedar-chat-input"
+      >
         {voice.isListening || voice.isSpeaking ? (
           <div className="py-2 items-center justify-center w-full">
             <VoiceIndicator
@@ -198,7 +201,7 @@ export const ChatInput: React.FC<{
             >
               <EditorContent
                 editor={editor}
-                className="overflow-scroll prose prose-sm max-w-none focus:outline-none outline-none focus:ring-0 ring-0 [&_*]:focus:outline-none [&_*]:outline-none [&_*]:focus:ring-0 [&_*]:ring-0 placeholder-gray-500 dark:placeholder-gray-400 [&_.ProseMirror]:p-0 [&_.ProseMirror]:outline-none [&_.ProseMirror]:break-words [&_.ProseMirror]:overflow-wrap-anywhere [&_.ProseMirror]:word-break-break-word"
+                className="h-fit overflow-scroll prose prose-sm max-w-none focus:outline-none outline-none focus:ring-0 ring-0 [&_*]:focus:outline-none [&_*]:outline-none [&_*]:focus:ring-0 [&_*]:ring-0 placeholder-gray-500 dark:placeholder-gray-400 [&_.ProseMirror]:p-0 [&_.ProseMirror]:outline-none [&_.ProseMirror]:break-words [&_.ProseMirror]:overflow-wrap-anywhere [&_.ProseMirror]:word-break-break-word"
               />
             </motion.div>
           </div>
