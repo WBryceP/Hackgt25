@@ -1,78 +1,64 @@
-import os
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-from models import EmbedRequest, EmbedResponse, EmbedStatus
-from twelvelabs_service import TwelveLabsService
+from typing import List
+from urllib.parse import urlparse
+import hashlib
+import re
 
+from fastapi import FastAPI, HTTPException
+from models import EmbedRequest, Clip
+from highlight_service import HighlightService, TLParams
 
-load_dotenv()
-
-app = FastAPI(
-    title="Video Embedding Service",
-    version="1.0.0",
-    description="Service to create TwelveLabs index, embed video, and return clips"
+PROMPT = (
+    "Extract segments where someone is stating a fact or making a claim, showing "
+    "numbers, or graphs and charts. Prefer segments that are informative "
+    "or where the speaker is trying to be convincing."
 )
+TEMPERATURE = 0.5
+MODEL_OPTIONS = ["visual", "audio"]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = FastAPI(title="Embedding API", version="1.1.0")
 
 
-def get_twelvelabs_service() -> TwelveLabsService:
+def _index_name_from_url(url: str, max_len: int = 63) -> str:
+    """
+    Make a deterministic, collision-resistant index name from a URL.
+    - human-readable slug from host+path
+    - short hash suffix to avoid collisions
+    - capped length to stay under typical index-name limits
+    """
+    parsed = urlparse(url)
+    base = f"{parsed.netloc}{parsed.path}"
+    slug = re.sub(r"[^a-zA-Z0-9\-]+", "-", base).strip("-").lower()
+    slug = re.sub(r"-{2,}", "-", slug) or "video"
+    h = hashlib.sha1(url.encode("utf-8")).hexdigest()[:8]
+    name = f"{slug}-{h}"
+    if len(name) > max_len:
+        head = max_len - 1 - len(h)
+        name = f"{slug[:head]}-{h}"
+    return name
+
+
+@app.post("/highlights", response_model=List[Clip])
+def create_highlights(req: EmbedRequest):
     try:
-        return TwelveLabsService()
-    except ValueError as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "healthy"}
-
-
-@app.get("/")
-def root():
-    return {"message": "Video Embedding Service", "version": "1.0.0"}
-
-
-@app.post("/embed", response_model=EmbedResponse)
-async def embed_video(
-    req: EmbedRequest,
-    svc: TwelveLabsService = Depends(get_twelvelabs_service)
-):
-    try:
-        index_id = await svc.ensure_index()
-        task_id = await svc.submit_video(req.downloadUrl)
-        video_id = await svc.poll_until_ready(task_id)
-        # Use filter to extract claim/stat/graphic clips
-        highlights = await svc.run_filter(video_id)
-        return EmbedResponse(
-            taskId=task_id,
-            indexId=index_id,
-            videoId=video_id,
-            clips=highlights,
+        index_name = _index_name_from_url(str(req.downloadUrl))
+        params = TLParams(
+            video_url=str(req.downloadUrl),
+            index_name=index_name,
+            model_options=MODEL_OPTIONS,
         )
-    except HTTPException:
-        raise
+        svc = HighlightService(params)
+        raw = svc.run(prompt=PROMPT, temperature=TEMPERATURE)
+
+        clips: List[Clip] = []
+        for h in raw or []:
+            start = h.get("start_sec")
+            end = h.get("end_sec")
+            text = h.get("highlight_summary") or ""
+            if start is None or end is None or not text:
+                continue
+            clips.append(
+                Clip(startSec=float(start), endSec=float(end), description=text)
+            )
+        return clips
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to embed video: {str(e)}")
-
-
-@app.get("/status/{taskId}", response_model=EmbedStatus)
-async def get_status(taskId: str, svc: TwelveLabsService = Depends(get_twelvelabs_service)):
-    status_info = await svc.get_task_status(taskId)
-    return EmbedStatus(taskId=taskId, status=status_info.get("status", "unknown"), progressPct=status_info.get("progressPct", 0))
-
-
-@app.get("/config")
-def get_config():
-    return {
-        "tl_api_configured": bool(os.getenv("TL_API_KEY") or os.getenv("TWELVELABS_API_KEY")),
-        "environment": os.getenv("ENV", "development"),
-    }
-
+        raise HTTPException(status_code=500, detail=str(e))
