@@ -15,6 +15,7 @@ PROMPT = (
 )
 TEMPERATURE = 0.5
 MODEL_OPTIONS = ["visual", "audio"]
+TEST_FLAG = True
 
 app = FastAPI(title="Embedding API", version="1.1.0")
 
@@ -46,6 +47,7 @@ def create_highlights(req: EmbedRequest):
             video_url=str(req.downloadUrl),
             index_name=index_name,
             model_options=MODEL_OPTIONS,
+            test_flag=TEST_FLAG,
         )
         svc = HighlightService(params)
         raw = svc.run(prompt=PROMPT, temperature=TEMPERATURE)
