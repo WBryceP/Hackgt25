@@ -86,3 +86,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.iml
+
+local_videos
+local_videos/*
