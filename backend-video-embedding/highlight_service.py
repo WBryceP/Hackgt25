@@ -20,6 +20,7 @@ class TLParams:
     index_name: str
     model_name: str = "pegasus1.2"
     model_options: Optional[List[str]] = None
+    test_flag: bool = True # if True, will not create index and task
 
 
 class HighlightService:
@@ -39,30 +40,34 @@ class HighlightService:
         then returns a list of highlight dicts (influenced by the prompt).
         """
         # 1) Create index with Pegasus
-        index = self.client.indexes.create(
-            index_name=self.params.index_name,
-            models=[
-                IndexesCreateRequestModelsItem(
-                    model_name=self.params.model_name,
-                    model_options=self.params.model_options or ["visual", "audio"],
-                )
-            ],
-        )
-        print(f"Created index: id={index.id}")
+        if not self.params.test_flag:
+            index = self.client.indexes.create(
+                index_name=self.params.index_name,
+                models=[
+                    IndexesCreateRequestModelsItem(
+                        model_name=self.params.model_name,
+                        model_options=self.params.model_options or ["visual", "audio"],
+                    )
+                ],
+            )
+            print(f"Created index: id={index.id}")
 
-        # 2) Create task for the video and wait until ready
-        task = self.client.tasks.create(index_id=index.id, video_url=self.params.video_url)
-        print(f"Created task: id={task.id}")
-        task = self.client.tasks.wait_for_done(task_id=task.id, callback=self._status_callback)
+            # 2) Create task for the video and wait until ready
+            task = self.client.tasks.create(index_id=index.id, video_url=self.params.video_url)
+            print(f"Created task: id={task.id}")
+            task = self.client.tasks.wait_for_done(task_id=task.id, callback=self._status_callback)
 
-        if task.status != "ready":
-            raise RuntimeError(f"Indexing failed with status {task.status}")
+            if task.status != "ready":
+                raise RuntimeError(f"Indexing failed with status {task.status}")
 
-        print(f"Upload complete. The unique identifier of your video is {task.video_id}.")
+            print(f"Upload complete. The unique identifier of your video is {task.video_id}.")
+            video_id = task.video_id
+        else:
+            video_id = '68d8da029035da6ed7552436'
 
         # 3) Summarize highlights
         res = self.client.summarize(
-            video_id=task.video_id,
+            video_id=video_id,
             type="highlight",
             prompt=prompt,
             temperature=temperature,
