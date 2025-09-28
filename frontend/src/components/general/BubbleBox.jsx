@@ -9,7 +9,6 @@ const BubbleBox = ({ header, content, sources, confidence }) => {
   const confidenceValues = ["low", "medium", "high"];
   return (
     <>
-      {" "}
       <div
         className="rounded-lg shadow-sm outline-placeholder/10 outline p-2 cursor-pointer hover:bg-placeholder/10 transition-colors duration-300"
         onClick={() => setShowSources(!showSources)}

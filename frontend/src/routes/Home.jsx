@@ -1,8 +1,6 @@
 import SearchBar from "../components/general/SearchBar";
 import DebateVideo from "../assets/debate.mp4";
 import { useRef } from "react";
-import { delay, motion } from "framer-motion";
-
 const Home = () => {
   const videoRef = useRef(null);
 

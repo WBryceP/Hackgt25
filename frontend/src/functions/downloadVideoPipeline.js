@@ -83,6 +83,13 @@ const useDownloadVideo = () => {
       // GET /downloadFile
       res = await fetch(url);
       data = await res.json();
+      const videoURL = data?.direct_video_url;
+
+      res = await fetch("localhost:8001/highlight_enriched", {
+        method: "POST",
+        body: JSON.stringify({ downloadURL: videoURL }),
+      });
+      data = await res.json();
 
       setDownloadVideoResult(data);
     } catch (error) {

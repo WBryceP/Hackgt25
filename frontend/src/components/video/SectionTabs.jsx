@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ClaimAnswer from "./sections/ClaimAnswer";
 import DeepSearch from "./sections/DeepSearch";
-import Sources from "./sections/Sources";
+import Loader from "../general/Loader";
 import FlaggedMoments from "./sections/FlaggedMoments";
 import {
   useRegisterState,
@@ -9,7 +9,7 @@ import {
   useSubscribeStateToAgentContext,
 } from "cedar-os";
 
-const SectionTabs = () => {
+const SectionTabs = ({ loading, error }) => {
   const [selectedTab, setSelectedTab] = useState(1);
   const [flaggedMoments, setFlaggedMoments] = useState([
     {
@@ -210,19 +210,31 @@ const SectionTabs = () => {
   return (
     <div className="bg-primary shadow-md rounded-md md:w-[50%]">
       {/* Formats */}
+
       <ul className="md:hidden flex flex-row w-full justify-between">
         {TabComponents}
       </ul>
       <ul className="hidden md:flex flex-row w-full justify-between">
         {TabComponents.slice(1, TabComponents.length)}
       </ul>
-
-      <div className="hidden md:flex p-2 relative   overflow-scroll ">
-        {content[selectedTab]}
-      </div>
-      <div className="flex md:hidden p-2 relative  overflow-scroll">
-        {content[selectedTab]}
-      </div>
+      {loading ? (
+        <div className="w-full h-1/3 flex justify-center items-center">
+          <Loader />
+        </div>
+      ) : error.length > 0 ? (
+        <div className="text-lowText text-center text-2xl h-1/3 justify-center items-center flex">
+          There was an error while retrieving your video
+        </div>
+      ) : (
+        <>
+          <div className="hidden md:flex p-2 relative   overflow-scroll ">
+            {content[selectedTab]}
+          </div>
+          <div className="flex md:hidden p-2 relative  overflow-scroll">
+            {content[selectedTab]}
+          </div>
+        </>
+      )}
     </div>
   );
 };

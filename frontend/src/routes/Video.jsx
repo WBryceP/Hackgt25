@@ -5,7 +5,6 @@ import Loader from "../components/general/Loader";
 import YouTube from "react-youtube";
 import SectionTabs from "../components/video/SectionTabs";
 import DeepSearch from "../components/video/sections/DeepSearch";
-// ...imports unchanged
 import { useRegisterState, useRegisterFrontendTool } from "cedar-os";
 import { z } from "zod";
 
@@ -16,11 +15,10 @@ const Video = ({ setError }) => {
   const nav = useNavigate();
 
   const playerRef = useRef(null);
-  const pendingSeekRef = useRef(null); // queue seeks before onReady
+  const pendingSeekRef = useRef(null);
 
   const [currentTime, setCurrentTime] = useState(0);
 
-  // === Cedar state: include setValue so the agent can read live time ===
   useRegisterState({
     key: "videoTimeStamp",
     description: "current timestamp of the youtube video",
@@ -70,7 +68,13 @@ const Video = ({ setError }) => {
     },
   });
 
-  const [downloadVideo, downloadError, loading] = useDownloadVideo();
+  const [downloadVideo, downloadVideoResult, downloadError, loading] =
+    useDownloadVideo();
+
+  useEffect(() => {
+    console.log(id);
+    downloadVideo(id);
+  }, [id]);
 
   const onReady = (e) => {
     playerRef.current = e.target;
@@ -86,7 +90,6 @@ const Video = ({ setError }) => {
     }
   };
 
-  // Poll the current time (good balance with 500ms)
   useEffect(() => {
     const tick = () => {
       const t = playerRef.current?.getCurrentTime?.();
@@ -132,7 +135,7 @@ const Video = ({ setError }) => {
         </div>
 
         {/* Tabs */}
-        <SectionTabs />
+        <SectionTabs loading={loading} error={downloadError} />
       </div>
     </div>
   );
