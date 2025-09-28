@@ -5,6 +5,8 @@ services:
     build:
       context: ./backend-research
       dockerfile: Dockerfile
+    volumes:
+      - ./local_videos:/backend-research/downloaded_videos
     ports:
       - "8000:8000"
     env_file:

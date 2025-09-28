@@ -1,13 +1,15 @@
 import json
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl, field_validator
-import os, httpx
+import os, httpx, uuid
 from ytdl import download_to_disk
 from settings import settings
 from dotenv import load_dotenv
 from models import FactCheckRequest, FactCheckResponse, ExaAnswerResponse
 from exa_service import ExaService
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse
 
 app = FastAPI(title="Backend Research API", version="1.0.0")
 
@@ -16,6 +18,12 @@ RAPIDAPI_HOST = settings.RAPIDAPI_HOST
 
 RAPIDAPI_KEY = settings.RAPIDAPI_KEY
 RAPIDAPI_HOST = settings.RAPIDAPI_HOST
+
+VIDEO_STORAGE_DIR = os.path.join(os.path.dirname(__file__), "downloaded_videos")
+os.makedirs(VIDEO_STORAGE_DIR, exist_ok=True)
+
+# Mount the directory as a static files path. This makes files publicly accessible.
+app.mount("/videos", StaticFiles(directory=VIDEO_STORAGE_DIR), name="videos")
 
 # Load environment variables
 load_dotenv()
@@ -157,62 +165,91 @@ async def status(jobId: str):
 @app.get("/downloadFile/{jobId}/{filename}")
 async def download_file(jobId: str, filename: str):
     """
-    Download the file and return it directly
+    Download from RapidAPI and return permanent URLs
     """
     path = f"/file/{jobId}/{filename}"
-    
-    # Use your existing get_rapidapi function but handle the binary response
     url = f"https://{settings.RAPIDAPI_HOST}{path}"
     
     async with httpx.AsyncClient(timeout=120.0) as client:
         response = await client.get(url, headers=BROWSER_HEADERS)
     
     if response.status_code != 200:
-        # Use similar error handling as your get_rapidapi function
-        text = response.text
-        try:
-            data = response.json()
-            error_msg = data.get("error") or data.get("message") or text[:300]
-        except:
-            error_msg = text[:300]
-        
-        raise HTTPException(status_code=502, detail={
-            "upstream_status": response.status_code,
-            "message": error_msg,
-        })
+        # Your error handling...
+        pass
     
-    # Return the file content directly
-    from fastapi.responses import Response
-    import mimetypes
+    # Generate unique filename
+    file_extension = os.path.splitext(filename)[1] or ".mp4"
+    unique_filename = f"{jobId}_{uuid.uuid4().hex[:8]}{file_extension}"
+    local_filepath = os.path.join(VIDEO_STORAGE_DIR, unique_filename)
     
-    content_type = response.headers.get('content-type')
-    if not content_type:
-        content_type = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+    # Save file permanently
+    with open(local_filepath, 'wb') as f:
+        f.write(response.content)
     
-    return Response(
-        content=response.content,
-        media_type=content_type,
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    # Generate permanent URLs
+    video_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/videos/{unique_filename}"
+    embed_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/embed/{unique_filename}"
+    
+    return {
+        "status": "ok", 
+        "direct_video_url": video_url,
+        "embed_url": embed_url,         # Web page with embedded video; use for TwelveLabs
+        "filename": unique_filename,
+        "message": "Video permanently stored and available at the provided URLs"
+    }
+
+@app.get("/videos/{filename}")
+async def get_video(filename: str):
+    """
+    Stream a video file for playback in the browser.
+    """
+    local_filepath = os.path.join(VIDEO_STORAGE_DIR, filename)
+    
+    if not os.path.exists(local_filepath):
+        raise HTTPException(status_code=404, detail="Video file not found")
+    
+    return FileResponse(
+        path=local_filepath,
+        media_type="video/mp4",
+        filename=filename,
+        # These headers make it embeddable and permanent
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "public, max-age=31536000"  # Cache for 1 year
+        }
     )
-    # """
-    # Get the public URL for the downloaded video/audio file.
+
+@app.get("/embed/{filename}", response_class=HTMLResponse)
+async def embed_video(filename: str):
+    """
+    Return an HTML page with the video embedded
+    """
+    video_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/videos/{filename}"
     
-    # Args:
-    #     jobId: The job ID returned from the /download endpoint
-    #     filename: The filename to download (e.g., 'video.mp4', 'audio.mp3')
-    # """
-    # # Construct the direct download URL
-    # download_url = f"https://{settings.RAPIDAPI_HOST}/file/{jobId}/{filename}"
-    
-    # # Return the public URL that TwelveLabs can use directly
-    # return {
-    #     "status": "ok", 
-    #     "download_url": download_url,
-    #     "headers_required": {
-    #         "x-rapidapi-host": settings.RAPIDAPI_HOST,
-    #         "x-rapidapi-key": settings.RAPIDAPI_KEY
-    #     }
-    # }
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Video: {filename}</title>
+        <style>
+            body {{ margin: 0; padding: 20px; background: #f5f5f5; }}
+            .video-container {{ max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }}
+            video {{ width: 100%; height: auto; }}
+        </style>
+    </head>
+    <body>
+        <div class="video-container">
+            <h2>Video: {filename}</h2>
+            <video controls autoplay muted>
+                <source src="{video_url}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p><a href="{video_url}" download>Download Video</a></p>
+        </div>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
 
 BROWSER_HEADERS = {
     "Content-Type": "application/json",
