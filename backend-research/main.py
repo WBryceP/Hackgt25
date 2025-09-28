@@ -30,7 +30,7 @@ app.mount("/videos", StaticFiles(directory=VIDEO_STORAGE_DIR), name="videos")
 load_dotenv()
 
 app = FastAPI(
-    title="Backend Research API", 
+    title="Backend Research API",
     version="1.0.0",
     description="API for fact-checking claims using Exa search"
 )
@@ -80,16 +80,18 @@ async def fact_check_claim(
 ):
     """
     Fact-check a claim using Exa search and return a truthfulness analysis.
-    
+
     This endpoint takes a claim and uses the Exa API to search for relevant
     information and provide an analysis of the claim's truthfulness.
     """
     try:
         result = await exa_service.fact_check_claim(request.claim)
+        result["startSec"] = request.startSec
+        result["endSec"]  = request.endSec
         return result
     except Exception as e:
         raise HTTPException(
-            status_code=500, 
+            status_code=500,
             detail=f"Failed to fact-check claim: {str(e)}"
         )
 
@@ -138,7 +140,7 @@ def get_config():
 #         return {"status": "ok", "path": out["path"]}
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e))
-    
+
 class DownloadRequest(BaseModel):
     url: HttpUrl
     format: str = "mp4"
@@ -180,29 +182,29 @@ async def download_file(jobId: str, filename: str):
     """
     path = f"/file/{jobId}/{filename}"
     url = f"https://{settings.RAPIDAPI_HOST}{path}"
-    
+
     async with httpx.AsyncClient(timeout=120.0) as client:
         response = await client.get(url, headers=BROWSER_HEADERS)
-    
+
     if response.status_code != 200:
         # Your error handling...
         pass
-    
+
     # Generate unique filename
     file_extension = os.path.splitext(filename)[1] or ".mp4"
     unique_filename = f"{jobId}_{uuid.uuid4().hex[:8]}{file_extension}"
     local_filepath = os.path.join(VIDEO_STORAGE_DIR, unique_filename)
-    
+
     # Save file permanently
     with open(local_filepath, 'wb') as f:
         f.write(response.content)
-    
+
     # Generate permanent URLs
     video_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/videos/{unique_filename}"
     embed_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/embed/{unique_filename}"
-    
+
     return {
-        "status": "ok", 
+        "status": "ok",
         "direct_video_url": video_url,
         "embed_url": embed_url,         # Web page with embedded video; use for TwelveLabs
         "filename": unique_filename,
@@ -215,10 +217,10 @@ async def get_video(filename: str):
     Stream a video file for playback in the browser.
     """
     local_filepath = os.path.join(VIDEO_STORAGE_DIR, filename)
-    
+
     if not os.path.exists(local_filepath):
         raise HTTPException(status_code=404, detail="Video file not found")
-    
+
     return FileResponse(
         path=local_filepath,
         media_type="video/mp4",
@@ -236,7 +238,7 @@ async def embed_video(filename: str):
     Return an HTML page with the video embedded
     """
     video_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/videos/{filename}"
-    
+
     html_content = f"""
     <!DOCTYPE html>
     <html>
