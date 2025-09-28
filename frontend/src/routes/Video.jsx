@@ -30,7 +30,6 @@ const Video = ({ setError }) => {
       setTime: {
         name: "setTime",
         description: "Seek the YouTube player to a time in seconds",
-        // ✅ Minimal schema (loose)
         argsSchema: z.object({
           seconds: z.number().nonnegative().optional(),
           play: z.boolean().optional(),

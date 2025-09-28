@@ -8,7 +8,7 @@ const ClaimAnswer = ({ claimsAnswers, setClaimAnswers }) => {
       <h2 className="text-placeholder">NOW REVIEWING</h2>
       <h1 className="my-3 text-base font-bold">Current claims being checked</h1>
       <ul className="flex flex-col gap-2 overflow-scroll p-2">
-        {claimsAnswers.map((claim, index) => {
+        {claimsAnswers?.map((claim, index) => {
           return (
             <BubbleBox
               key={claim + "-" + index}

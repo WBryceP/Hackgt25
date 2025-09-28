@@ -3,7 +3,11 @@ import ClaimAnswer from "./sections/ClaimAnswer";
 import DeepSearch from "./sections/DeepSearch";
 import Sources from "./sections/Sources";
 import FlaggedMoments from "./sections/FlaggedMoments";
-import { useRegisterState, useStateBasedMentionProvider } from "cedar-os";
+import {
+  useRegisterState,
+  useStateBasedMentionProvider,
+  useSubscribeStateToAgentContext,
+} from "cedar-os";
 
 const SectionTabs = () => {
   const [selectedTab, setSelectedTab] = useState(1);
@@ -124,6 +128,32 @@ const SectionTabs = () => {
     description: "Moments",
     icon: "🔎",
     color: "#eec643",
+  });
+
+  useSubscribeStateToAgentContext({
+    stateKey: "claimsAnswers",
+    name: "Claims & Answers",
+    // keep payload compact so it fits in context
+    select: (claimsAnswers) =>
+      claimsAnswers
+        .map((c) => ({
+          claim: c.claim,
+          confidence: c.confidence,
+          sources: c.sources?.slice(0, 3),
+        }))
+        .slice(0, 10),
+  });
+
+  useSubscribeStateToAgentContext({
+    stateKey: "flaggedMoments",
+    name: "Flagged Moments",
+    select: (flaggedMoments) =>
+      flaggedMoments
+        .map((m) => ({
+          momentName: m.momentName,
+          momentContext: m.momentContext,
+        }))
+        .slice(0, 20),
   });
 
   // Sources
