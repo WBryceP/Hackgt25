@@ -15,7 +15,7 @@ const useDownloadVideo = () => {
 
     try {
       setLoading(true);
-
+      console.log(url);
       let res = await fetch(import.meta.env.VITE_BACKEND_URL + "/download", {
         method: "POST",
         body: JSON.stringify({
