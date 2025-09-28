@@ -11,6 +11,7 @@ from exa_service import ExaService
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
+import traceback, logging
 
 app = FastAPI(title="Backend Research API", version="1.0.0")
 
@@ -30,7 +31,7 @@ app.mount("/videos", StaticFiles(directory=VIDEO_STORAGE_DIR), name="videos")
 load_dotenv()
 
 app = FastAPI(
-    title="Backend Research API", 
+    title="Backend Research API",
     version="1.0.0",
     description="API for fact-checking claims using Exa search"
 )
@@ -72,45 +73,49 @@ def root():
     """Root endpoint"""
     return {"message": "Backend Research API", "version": "1.0.0"}
 
-
 @app.post("/fact-check", response_model=FactCheckResponse)
 async def fact_check_claim(
     request: FactCheckRequest,
-    exa_service: ExaService = Depends(get_exa_service)
+    exa_service: ExaService = Depends(get_exa_service),
 ):
-    """
-    Fact-check a claim using Exa search and return a truthfulness analysis.
-    
-    This endpoint takes a claim and uses the Exa API to search for relevant
-    information and provide an analysis of the claim's truthfulness.
-    """
     try:
         result = await exa_service.fact_check_claim(request.claim)
-        return result
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Failed to fact-check claim: {str(e)}"
-        )
 
+        # Case 1: service returned a Pydantic model
+        if isinstance(result, FactCheckResponse):
+            # don't mutate; create an updated copy
+            return result.copy(update={
+                "startSec": request.startSec,
+                "endSec": request.endSec,
+            })
 
-@app.post("/exa-search", response_model=ExaAnswerResponse)
-async def exa_search(
-    query: str,
-    exa_service: ExaService = Depends(get_exa_service)
-):
-    """
-    Direct access to Exa's answer API for general queries.
-    """
-    try:
-        result = await exa_service.answer_query(query)
-        return result
+        # Case 2: service returned a dict-like
+        if isinstance(result, dict):
+            # make a new dict with required fields added/overridden
+            merged = {**result, "startSec": request.startSec, "endSec": request.endSec}
+            return FactCheckResponse(**merged)
+
+        # Case 3: unknown object; try to coerce
+        coerced = {
+            "startSec": request.startSec,
+            "endSec": request.endSec,
+            "title": getattr(result, "title", request.claim[:50]),
+            "description": getattr(result, "description", request.claim),
+            "truthfulnessScore": int(getattr(result, "truthfulnessScore", 3)),
+            "response": getattr(result, "response", "No detailed response provided."),
+            "sources": getattr(result, "sources", []),
+            "exaResponse": getattr(result, "exaResponse", None),
+        }
+        return FactCheckResponse(**coerced)
+
+    except HTTPException as he:
+        # bubble up original detail/status
+        raise he
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to search Exa: {str(e)}"
+            detail=f"Failed to fact-check claim: {e}",
         )
-
 
 @app.get("/config")
 def get_config():
@@ -138,7 +143,7 @@ def get_config():
 #         return {"status": "ok", "path": out["path"]}
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e))
-    
+
 class DownloadRequest(BaseModel):
     url: HttpUrl
     format: str = "mp4"
@@ -180,29 +185,29 @@ async def download_file(jobId: str, filename: str):
     """
     path = f"/file/{jobId}/{filename}"
     url = f"https://{settings.RAPIDAPI_HOST}{path}"
-    
+
     async with httpx.AsyncClient(timeout=120.0) as client:
         response = await client.get(url, headers=BROWSER_HEADERS)
-    
+
     if response.status_code != 200:
         # Your error handling...
         pass
-    
+
     # Generate unique filename
     file_extension = os.path.splitext(filename)[1] or ".mp4"
     unique_filename = f"{jobId}_{uuid.uuid4().hex[:8]}{file_extension}"
     local_filepath = os.path.join(VIDEO_STORAGE_DIR, unique_filename)
-    
+
     # Save file permanently
     with open(local_filepath, 'wb') as f:
         f.write(response.content)
-    
+
     # Generate permanent URLs
     video_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/videos/{unique_filename}"
     embed_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/embed/{unique_filename}"
-    
+
     return {
-        "status": "ok", 
+        "status": "ok",
         "direct_video_url": video_url,
         "embed_url": embed_url,         # Web page with embedded video; use for TwelveLabs
         "filename": unique_filename,
@@ -215,10 +220,10 @@ async def get_video(filename: str):
     Stream a video file for playback in the browser.
     """
     local_filepath = os.path.join(VIDEO_STORAGE_DIR, filename)
-    
+
     if not os.path.exists(local_filepath):
         raise HTTPException(status_code=404, detail="Video file not found")
-    
+
     return FileResponse(
         path=local_filepath,
         media_type="video/mp4",
@@ -236,7 +241,7 @@ async def embed_video(filename: str):
     Return an HTML page with the video embedded
     """
     video_url = f"https://neda-pericardial-unanachronously.ngrok-free.dev/videos/{filename}"
-    
+
     html_content = f"""
     <!DOCTYPE html>
     <html>
