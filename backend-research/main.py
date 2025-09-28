@@ -11,10 +11,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
 
-app = FastAPI(title="Backend Research API", version="1.0.0")
+# Load environment variables
+load_dotenv()
 
-RAPIDAPI_KEY = settings.RAPIDAPI_KEY
-RAPIDAPI_HOST = settings.RAPIDAPI_HOST
+app = FastAPI(title="Backend Research API", version="1.0.0")
 
 RAPIDAPI_KEY = settings.RAPIDAPI_KEY
 RAPIDAPI_HOST = settings.RAPIDAPI_HOST
@@ -24,9 +24,6 @@ os.makedirs(VIDEO_STORAGE_DIR, exist_ok=True)
 
 # Mount the directory as a static files path. This makes files publicly accessible.
 app.mount("/videos", StaticFiles(directory=VIDEO_STORAGE_DIR), name="videos")
-
-# Load environment variables
-load_dotenv()
 
 app = FastAPI(
     title="Backend Research API", 
@@ -148,6 +145,7 @@ async def video_info(req: DownloadRequest):
 
 @app.post("/download")
 async def download(req: DownloadRequest):
+    print("API_KEY: ", settings.RAPIDAPI_KEY)
     data = await post_rapidapi("/download", {
         "url": str(req.url),
         "format": req.format,
