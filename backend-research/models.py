@@ -62,8 +62,10 @@ class ExaAnswerResponse(BaseModel):
 
 
 class FactCheckResponse(BaseModel):
-    startSec: float = Field(..., description="The start second of the claim", ge=0)
-    endSec: float = Field(..., description="The end second of the claim", gt=0)
+    # startSec: float = Field(..., description="The start second of the claim", ge=0)
+    # endSec: float = Field(..., description="The end second of the claim", gt=0)
+    startSec: Optional[float] = Field(None, ge=0)
+    endSec: Optional[float] = Field(None, gt=0)
     title: str = Field(..., description="A very short title for the claim made")
     description: str = Field(..., description="A description of the claim made. Keep the description without fluff like a news sub-headline.")
     truthfulnessScore: int = Field(

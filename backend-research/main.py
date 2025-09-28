@@ -11,6 +11,7 @@ from exa_service import ExaService
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
+import traceback, logging
 
 app = FastAPI(title="Backend Research API", version="1.0.0")
 
@@ -72,47 +73,49 @@ def root():
     """Root endpoint"""
     return {"message": "Backend Research API", "version": "1.0.0"}
 
-
 @app.post("/fact-check", response_model=FactCheckResponse)
 async def fact_check_claim(
     request: FactCheckRequest,
-    exa_service: ExaService = Depends(get_exa_service)
+    exa_service: ExaService = Depends(get_exa_service),
 ):
-    """
-    Fact-check a claim using Exa search and return a truthfulness analysis.
-
-    This endpoint takes a claim and uses the Exa API to search for relevant
-    information and provide an analysis of the claim's truthfulness.
-    """
     try:
         result = await exa_service.fact_check_claim(request.claim)
-        result["startSec"] = request.startSec
-        result["endSec"]  = request.endSec
-        return result
+
+        # Case 1: service returned a Pydantic model
+        if isinstance(result, FactCheckResponse):
+            # don't mutate; create an updated copy
+            return result.copy(update={
+                "startSec": request.startSec,
+                "endSec": request.endSec,
+            })
+
+        # Case 2: service returned a dict-like
+        if isinstance(result, dict):
+            # make a new dict with required fields added/overridden
+            merged = {**result, "startSec": request.startSec, "endSec": request.endSec}
+            return FactCheckResponse(**merged)
+
+        # Case 3: unknown object; try to coerce
+        coerced = {
+            "startSec": request.startSec,
+            "endSec": request.endSec,
+            "title": getattr(result, "title", request.claim[:50]),
+            "description": getattr(result, "description", request.claim),
+            "truthfulnessScore": int(getattr(result, "truthfulnessScore", 3)),
+            "response": getattr(result, "response", "No detailed response provided."),
+            "sources": getattr(result, "sources", []),
+            "exaResponse": getattr(result, "exaResponse", None),
+        }
+        return FactCheckResponse(**coerced)
+
+    except HTTPException as he:
+        # bubble up original detail/status
+        raise he
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to fact-check claim: {str(e)}"
+            detail=f"Failed to fact-check claim: {e}",
         )
-
-
-@app.post("/exa-search", response_model=ExaAnswerResponse)
-async def exa_search(
-    query: str,
-    exa_service: ExaService = Depends(get_exa_service)
-):
-    """
-    Direct access to Exa's answer API for general queries.
-    """
-    try:
-        result = await exa_service.answer_query(query)
-        return result
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to search Exa: {str(e)}"
-        )
-
 
 @app.get("/config")
 def get_config():
